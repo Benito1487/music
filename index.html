@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Музична вікторина — вгадай українську пісню за фрагментом." />
+  <title>Вгадай пісню — український музичний квіз</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .clip-duration-picker{display:flex;align-items:center;gap:14px;margin-top:18px;color:var(--muted);font-size:12px}
+    .clip-duration-picker select{padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:#191927;color:var(--text);font:inherit}
+    @media(max-width:560px){.clip-duration-picker{align-items:stretch;flex-direction:column;gap:8px}.clip-duration-picker select{width:100%}}
+    .volume-control{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:16px}.volume-control input{width:90px;accent-color:#a78bfa}
+    @media(max-width:560px){.volume-control input{width:65px}}
+    .youtube-player{left:-1000px;right:auto;bottom:0;opacity:0;pointer-events:none}
+    .game-duration-control{display:flex;flex-direction:column;gap:4px;color:var(--muted);font-size:9px;white-space:nowrap}.game-duration-control select{padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:#191927;color:var(--text);font:inherit}
+  </style>
+</head>
+<body>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="На головну"><span class="brand-icon">♫</span><span>Вгадай<span class="brand-accent">Пісню</span></span></a>
+    <div class="top-actions">
+      <span class="top-label"><span class="live-dot"></span> МУЗИЧНА ВІКТОРИНА</span>
+      <button class="icon-btn" id="soundToggle" title="Увімкнути або вимкнути звук">🔊</button>
+      <label class="volume-control" for="volumeControl" title="Гучність">🔉<input id="volumeControl" type="range" min="0" max="100" value="70" aria-label="Гучність"></label>
+    </div>
+  </header>
+
+  <main>
+    <section id="homeScreen" class="screen active">
+      <div class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow"><span>✦</span> УКРАЇНСЬКА МУЗИКА • МЕМИ • ХІТИ</div>
+          <h1>Ти справжній<br><span>музичний</span> експерт?</h1>
+          <p class="hero-description">Слухай уривок, впізнавай улюблені хіти та доведи, що знаєш українську музику на всі 100%.</p>
+          <div class="hero-buttons">
+            <button class="primary-btn" id="startBtn">Почати гру <span>↗</span></button>
+            <button class="secondary-btn" id="howBtn">Як грати?</button>
+          </div>
+          <div class="hero-stats">
+            <div><strong>4</strong><small>варіанти відповіді</small></div>
+            <div><strong>15</strong><small>секунд на раунд</small></div>
+            <div><strong>∞</strong><small>музичного настрою</small></div>
+          </div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="disc disc-back"></div><div class="disc disc-front"><div class="disc-center">♫</div></div>
+          <div class="equalizer"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="floating-note note-one">♪</div><div class="floating-note note-two">♫</div>
+          <div class="hero-pill">ЗНАЙОМІ ХІТИ<br><b>НЕОЧІКУВАНІ МЕМИ</b></div>
+        </div>
+      </div>
+      <section class="category-section">
+        <div class="section-heading"><div><span class="eyebrow">ОБИРАЙ СВІЙ НАСТРІЙ</span><h2>Що сьогодні слухаємо?</h2></div><span class="muted">Категорії гри</span></div>
+        <div class="category-grid">
+          <button class="category-card selected" data-category="all"><span class="category-emoji">🎧</span><span><b>Усе підряд</b><small>Мікс усіх жанрів</small></span><span class="card-arrow">↗</span></button>
+          <button class="category-card" data-category="classic"><span class="category-emoji">🇺🇦</span><span><b>Класика</b><small>Пісні, що знають усі</small></span><span class="card-arrow">↗</span></button>
+          <button class="category-card" data-category="game-other"><span class="category-emoji">🎮</span><span><b>Game OST / Other</b><small>Саундтреки з ігор та інше</small></span><span class="card-arrow">↗</span></button>
+        </div>
+      </section>
+      <div class="clip-duration-picker">
+        <label for="clipDuration">Тривалість прослуховування</label>
+        <select id="clipDuration">
+          <option value="3">3 секунди</option>
+          <option value="5">5 секунд</option>
+          <option value="10">10 секунд</option>
+          <option value="15" selected>15 секунд</option>
+          <option value="20">20 секунд</option>
+          <option value="25">25 секунд</option>
+          <option value="full">Повністю</option>
+        </select>
+      </div>
+      <div class="disclaimer">Для гри потрібне підключення до інтернету: музика відтворюється через вбудований YouTube-плеєр.</div>
+    </section>
+
+    <section id="gameScreen" class="screen">
+      <div class="game-topline"><button class="back-btn" id="backBtn">← На головну</button><div class="round-label">РАУНД <b id="roundNumber">01</b></div><div class="score-label">★ <b id="score">0</b> балів</div></div>
+      <div class="game-layout">
+        <div class="game-main">
+          <div class="game-heading"><div><span class="eyebrow">УВАЖНО СЛУХАЙ</span><h2>Яка це пісня?</h2></div><span class="difficulty" id="categoryLabel">УСЕ ПІДРЯД</span></div>
+          <div class="player-card">
+            <div class="player-visual"><div class="vinyl"><div class="vinyl-label">♫</div></div><div class="sound-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+            <div class="player-info"><span class="eyebrow">ЗАГАДАНИЙ ТРЕК</span><h3>Таємна композиція</h3><p id="playerStatus">Натисни кнопку, щоб почати прослуховування</p>
+              <div class="player-controls"><button class="play-btn" id="playBtn">▶</button><label class="game-duration-control" for="gameClipDuration"><span>Фрагмент</span><select id="gameClipDuration"><option value="3">3 с</option><option value="5">5 с</option><option value="10">10 с</option><option value="15" selected>15 с</option><option value="20">20 с</option><option value="25">25 с</option><option value="full">Повністю</option></select></label><div class="track-progress"><div class="progress-meta"><span id="playState">ГОТОВИЙ ДО СТАРТУ</span><span id="timeLeft">0:15</span></div><div class="progress-track"><div id="progressFill"></div></div></div><button class="replay-btn" id="replayBtn" title="Прослухати ще раз">↻</button></div>
+            </div>
+          </div>
+          <div class="answer-heading"><b>Обери правильну відповідь</b><span>+100 балів за правильну відповідь</span></div>
+          <div class="answers" id="answers"></div>
+          <div class="feedback" id="feedback" aria-live="polite"></div>
+          <div class="game-footer"><span>ПІДКАЗКА: УВАЖНО СЛУХАЙ МЕЛОДІЮ</span><button id="nextBtn" class="primary-btn next-btn" disabled>Наступна пісня <span>→</span></button></div>
+        </div>
+        <aside class="side-panel"><div class="side-card"><span class="eyebrow">ТВОЯ ГРА</span><div class="big-score" id="sideScore">0</div><span class="muted">набрано балів</span><div class="side-divider"></div><div class="side-stat"><span>Правильні відповіді</span><b id="correctCount">0</b></div><div class="side-stat"><span>Поточний раунд</span><b id="sideRound">1</b></div><div class="side-stat"><span>Точність</span><b id="accuracy">—</b></div></div><div class="tip-card"><span>💡</span><div><b>Музична порада</b><p>Не поспішай! У тебе є 15 секунд, щоб упізнати мелодію.</p></div></div></aside>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="screen">
+      <div class="result-card"><div class="result-icon">🏆</div><span class="eyebrow">ГРУ ЗАВЕРШЕНО</span><h2 id="resultTitle">Чудова гра!</h2><p id="resultText">Твій музичний результат</p><div class="result-score" id="finalScore">0</div><span class="muted">БАЛІВ</span><div class="result-stats"><div><b id="finalCorrect">0</b><small>Правильних</small></div><div><b id="finalTotal">0</b><small>Раундів</small></div><div><b id="finalAccuracy">0%</b><small>Точність</small></div></div><button class="primary-btn" id="againBtn">Зіграти ще раз ↗</button><button class="text-btn" id="homeBtn">Повернутися на головну</button></div>
+    </section>
+  </main>
+  <footer><span>♫ ВгадайПісню</span><span>Зроблено для гарного настрою 💙💛</span></footer>
+
+  <div id="howModal" class="modal hidden"><div class="modal-card"><button class="modal-close" id="closeModal">×</button><span class="eyebrow">ТРИ ПРОСТІ КРОКИ</span><h2>Як грати?</h2><ol><li><b>Слухай.</b> Натисни ▶ і послухай фрагмент пісні.</li><li><b>Вгадуй.</b> Обери одну з чотирьох відповідей.</li><li><b>Перемагай.</b> Отримуй 100 балів за кожну правильну відповідь.</li></ol><p class="muted">У демоверсії 15 раундів. YouTube-плеєр залишається видимим відповідно до правил платформи.</p><button class="primary-btn" id="modalStart">Зрозуміло, граємо!</button></div></div>
+  <div id="youtubePlayer" class="youtube-player" aria-label="Вбудований YouTube-плеєр"></div>
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="script.js"></script>
+</body>
+</html>
